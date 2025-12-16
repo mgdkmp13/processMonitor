@@ -29,3 +29,4 @@ C:\Users\Magda\Desktop\studia\sem7\programowanie_lokalnych_aplikacji\processMoni
 C:\Users\Magda\Desktop\studia\sem7\programowanie_lokalnych_aplikacji\processMonitor\processMonitor\obj\Debug\net8.0-windows\Views\PriorityDialog.baml
 C:\Users\Magda\Desktop\studia\sem7\programowanie_lokalnych_aplikacji\processMonitor\processMonitor\obj\Debug\net8.0-windows\Views\MonitoredProcessesWindow.g.cs
 C:\Users\Magda\Desktop\studia\sem7\programowanie_lokalnych_aplikacji\processMonitor\processMonitor\obj\Debug\net8.0-windows\Views\PriorityDialog.g.cs
+C:\Users\Magda\Desktop\studia\sem7\programowanie_lokalnych_aplikacji\processMonitor\processMonitor\obj\Debug\net8.0-windows\processMonitor.sourcelink.json

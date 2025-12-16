@@ -10,47 +10,48 @@ namespace processMonitor.Services
             int samplingIntervalMs,
             CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(samplingIntervalMs));
+            
+            try
             {
-                try
+                while (await timer.WaitForNextTickAsync(token))
                 {
-                    using var p = Process.GetProcessById(tracked.ProcessId);
-                    
-                    var memoryMB = p.WorkingSet64 / 1024.0 / 1024.0;
-                    tracked.MemorySamples.Add((DateTime.Now, memoryMB));
-                    
-                    if (tracked.MemorySamples.Count > 1000)
+                    try
                     {
-                        tracked.MemorySamples.RemoveAt(0);
+                        using var p = Process.GetProcessById(tracked.ProcessId);
+                        
+                        var memoryMB = p.WorkingSet64 / 1024.0 / 1024.0;
+                        tracked.MemorySamples.Add((DateTime.Now, memoryMB));
+                        
+                        if (tracked.MemorySamples.Count > 1000)
+                        {
+                            tracked.MemorySamples.RemoveAt(0);
+                        }
+                    }
+                    catch (ArgumentException)
+                    {
+                        tracked.FinishedAt = DateTime.Now;
+                        break;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        tracked.FinishedAt = DateTime.Now;
+                        break;
+                    }
+                    catch
+                    {
                     }
                 }
-                catch (ArgumentException)
-                {
-                    tracked.FinishedAt = DateTime.Now;
-                    break;
-                }
-                catch (InvalidOperationException)
-                {
-                    tracked.FinishedAt = DateTime.Now;
-                    break;
-                }
-                catch
-                {
-                }
-
-                try
-                {
-                    await Task.Delay(samplingIntervalMs, token);
-                }
-                catch (TaskCanceledException)
-                {
-                    break;
-                }
             }
-            
-            if (tracked.FinishedAt == null)
+            catch (OperationCanceledException)
             {
-                tracked.FinishedAt = DateTime.Now;
+            }
+            finally
+            {
+                if (tracked.FinishedAt == null)
+                {
+                    tracked.FinishedAt = DateTime.Now;
+                }
             }
         }
     }

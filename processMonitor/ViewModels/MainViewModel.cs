@@ -163,23 +163,17 @@ namespace processMonitor.ViewModels
 
         private async Task AutoRefreshAsync(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(RefreshInterval));
+            
+            try
             {
-                try
+                while (await timer.WaitForNextTickAsync(token))
                 {
-                    await Task.Delay(RefreshInterval, token);
-                    if (!token.IsCancellationRequested)
-                    {
-                        await RefreshAsync();
-                    }
+                    await RefreshAsync();
                 }
-                catch (TaskCanceledException)
-                {
-                    break;
-                }
-                catch (Exception)
-                {
-                }
+            }
+            catch (OperationCanceledException)
+            {
             }
         }
 
