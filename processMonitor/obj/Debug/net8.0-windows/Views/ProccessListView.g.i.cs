@@ -52,7 +52,7 @@ namespace processMonitor.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/processMonitor;V1.0.0.0;component/views/proccesslistview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/processMonitor;component/views/proccesslistview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Views\ProccessListView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

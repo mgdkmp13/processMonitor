@@ -1,112 +1,209 @@
 <UserControl x:Class="processMonitor.Views.ProcessDetailsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:Diagnostics="clr-namespace:System.Diagnostics;assembly=System">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="10">
-            <TextBlock Text="Process Details" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="300"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- BASIC INFO HEADER -->
+        <Border Grid.Row="0" Background="#34495e" Padding="15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Foreground="#ecf0f1" Margin="0,5,0,0">
+                        <Run Text="PID:"/>
+                        <Run Text="{Binding Id, Mode=OneWay}" FontWeight="Bold"/>
+                        <Run Text="  |  Priority:"/>
+                        <Run Text="{Binding Priority, Mode=OneWay}" FontWeight="Bold"/>
+                        <Run Text="  |  Threads:"/>
+                        <Run Text="{Binding ThreadCount, Mode=OneWay}" FontWeight="Bold"/>
+                    </TextBlock>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Border Background="#e74c3c" Padding="15,10" Margin="5,0" CornerRadius="5">
+                        <StackPanel>
+                            <TextBlock Text="MEMORY" FontSize="10" Foreground="White" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding MemoryMB, StringFormat='{}{0:F2} MB'}" 
+                                       FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Background="#27ae60" Padding="15,10" Margin="5,0" CornerRadius="5">
+                        <StackPanel>
+                            <TextBlock Text="TRACKED" FontSize="10" Foreground="White" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding IsTracked}" 
+                                       FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Button Content="⚙ Priority" Click="ChangePriority_Click" 
+                            Padding="15,10" Margin="5,0"
+                            Background="#3498db" Foreground="White" 
+                            BorderThickness="0" Cursor="Hand" FontSize="14"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- PERFORMANCE CHART (only visible when tracked) -->
+        <Border Grid.Row="1" Background="White" BorderBrush="#bdc3c7" BorderThickness="1" Margin="0,0,0,5">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsTracked}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             
-            <Border BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="0,5">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Process ID:" FontWeight="Bold" Margin="0,5"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Id}" Margin="0,5"/>
-
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:" FontWeight="Bold" Margin="0,5"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Name}" Margin="0,5"/>
-
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Memory (MB):" FontWeight="Bold" Margin="0,5"/>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MemoryMB, StringFormat=N2}" Margin="0,5"/>
-
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Thread Count:" FontWeight="Bold" Margin="0,5"/>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ThreadCount}" Margin="0,5"/>
-
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Priority:" FontWeight="Bold" Margin="0,5"/>
-                    <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
-                        <TextBlock Text="{Binding Priority}" Margin="0,5,10,5"/>
-                        <Button Content="Change Priority" Click="ChangePriority_Click" Padding="5"/>
-                    </StackPanel>
-
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Is Tracked:" FontWeight="Bold" Margin="0,5"/>
-                    <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Margin="0,5">
-                        <TextBlock Text="{Binding IsTracked}"/>
-                        <TextBlock Text=" (since " Margin="5,0,0,0">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsTracked}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock Text="{Binding TrackingStartedAt, StringFormat='{}{0:HH:mm:ss}'}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsTracked}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBlock Text=")">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsTracked}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <Border Grid.Row="0" Background="#2c3e50" Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="📊 Real-Time Performance Monitor" 
+                                   FontSize="14" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Foreground="#ecf0f1" Margin="0,3,0,0">
+                            <Run Text="Tracking since:"/>
+                            <Run Text="{Binding TrackingStartedAt, StringFormat='{}{0:HH:mm:ss}', Mode=OneWay}" FontWeight="Bold"/>
                         </TextBlock>
                     </StackPanel>
-                </Grid>
-            </Border>
+                </Border>
+                
+                <lvc:CartesianChart Grid.Row="1" 
+                                   Series="{Binding ChartSeries}"
+                                   XAxes="{Binding ChartXAxes}"
+                                   YAxes="{Binding ChartYAxes}"
+                                   TooltipPosition="Top"
+                                   Margin="10">
+                    <lvc:CartesianChart.Style>
+                        <Style TargetType="lvc:CartesianChart">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ChartSeries}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </lvc:CartesianChart.Style>
+                </lvc:CartesianChart>
+                
+                <TextBlock Grid.Row="1" 
+                           Text="⏳ Collecting data... Please wait a moment."
+                           FontSize="14" Foreground="#95a5a6"
+                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ChartSeries}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </Border>
+        
+        <!-- NOT TRACKING MESSAGE -->
+        <Border Grid.Row="1" Background="#ecf0f1" BorderBrush="#bdc3c7" BorderThickness="1" Margin="0,0,0,5">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsTracked}" Value="False">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="📊 Performance Chart" 
+                           FontSize="16" FontWeight="Bold" 
+                           Foreground="#7f8c8d" HorizontalAlignment="Center"/>
+                <TextBlock Text="Enable tracking to see real-time performance data" 
+                           FontSize="12" Foreground="#95a5a6" 
+                           Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                <TextBlock Text="Use 'Toggle Tracking' button in toolbar" 
+                           FontSize="11" Foreground="#bdc3c7" 
+                           Margin="0,5,0,0" HorizontalAlignment="Center" FontStyle="Italic"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- DETAILS TABS -->
+        <TabControl Grid.Row="2">
+            <TabItem Header="📋 Overview">
+                <Border BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-            <TextBlock Text="Threads" FontSize="16" FontWeight="Bold" Margin="0,15,0,5"/>
-            <Border BorderBrush="Gray" BorderThickness="1" Padding="5" Margin="0,5" MaxHeight="200">
-                <ListView ItemsSource="{Binding Threads}" BorderThickness="0">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Process ID:" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Id}" Margin="0,5"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Name}" Margin="0,5"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Memory (MB):" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MemoryMB, StringFormat=N2}" Margin="0,5"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Thread Count:" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ThreadCount}" Margin="0,5"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Priority:" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Priority}" Margin="0,5"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+            
+            <TabItem Header="🧵 Threads">
+                <ListView ItemsSource="{Binding Threads}" Margin="5">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Thread ID" DisplayMemberBinding="{Binding Id}" Width="100"/>
-                            <GridViewColumn Header="State" DisplayMemberBinding="{Binding State}" Width="100"/>
-                            <GridViewColumn Header="Priority" DisplayMemberBinding="{Binding Priority}" Width="100"/>
+                            <GridViewColumn Header="State" DisplayMemberBinding="{Binding State}" Width="150"/>
+                            <GridViewColumn Header="Priority" DisplayMemberBinding="{Binding Priority}" Width="150"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
-            </Border>
+            </TabItem>
 
-            <TextBlock Text="Modules" FontSize="16" FontWeight="Bold" Margin="0,15,0,5"/>
-            <Border BorderBrush="Gray" BorderThickness="1" Padding="5" Margin="0,5" MaxHeight="200">
-                <ListView ItemsSource="{Binding Modules}" BorderThickness="0">
+            <TabItem Header="📦 Modules">
+                <ListView ItemsSource="{Binding Modules}" Margin="5">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Module Name" DisplayMemberBinding="{Binding ModuleName}" Width="200"/>
-                            <GridViewColumn Header="File Name" DisplayMemberBinding="{Binding FileName}" Width="250"/>
+                            <GridViewColumn Header="File Name" DisplayMemberBinding="{Binding FileName}" Width="350"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
-            </Border>
-        </StackPanel>
-    </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
 </UserControl>

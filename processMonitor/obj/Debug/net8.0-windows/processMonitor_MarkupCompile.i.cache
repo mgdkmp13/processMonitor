@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 C:\Users\Magda\Desktop\studia\sem7\programowanie_lokalnych_aplikacji\processMonitor\processMonitor\App.xaml
-61041442616
+8506671359
 
-18-829355977
-198-192518753
-MainWindow.xaml;Views\MonitoredProcessesWindow.xaml;Views\PriorityDialog.xaml;Views\ProccessListControl.xaml;Views\ProccessListView.xaml;Views\ProcessDetailsView.xaml;
+24-1685608509
+207818998257
+MainWindow.xaml;Views\MonitoredProcessesWindow.xaml;Views\PerformanceChartView.xaml;Views\PerformanceChartWindow.xaml;Views\PriorityDialog.xaml;Views\ProccessListControl.xaml;Views\ProccessListView.xaml;Views\ProcessDetailsView.xaml;
 
 False
 

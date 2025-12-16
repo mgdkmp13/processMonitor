@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 
 namespace processMonitor.Models
 {
@@ -60,6 +62,51 @@ namespace processMonitor.Models
         
         public ObservableCollection<ThreadInfo> Threads { get; set; } = new();
         public ObservableCollection<ModuleInfo> Modules { get; set; } = new();
+
+        // Chart data
+        public List<PerformanceData> PerformanceSamples { get; set; } = new();
+        
+        private ObservableCollection<ISeries>? _chartSeries;
+        public ObservableCollection<ISeries>? ChartSeries
+        {
+            get => _chartSeries;
+            set
+            {
+                if (_chartSeries != value)
+                {
+                    _chartSeries = value;
+                    OnPropertyChanged(nameof(ChartSeries));
+                }
+            }
+        }
+
+        private Axis[]? _chartXAxes;
+        public Axis[]? ChartXAxes
+        {
+            get => _chartXAxes;
+            set
+            {
+                if (_chartXAxes != value)
+                {
+                    _chartXAxes = value;
+                    OnPropertyChanged(nameof(ChartXAxes));
+                }
+            }
+        }
+
+        private Axis[]? _chartYAxes;
+        public Axis[]? ChartYAxes
+        {
+            get => _chartYAxes;
+            set
+            {
+                if (_chartYAxes != value)
+                {
+                    _chartYAxes = value;
+                    OnPropertyChanged(nameof(ChartYAxes));
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
